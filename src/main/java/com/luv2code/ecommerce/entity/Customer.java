@@ -1,6 +1,5 @@
 package com.luv2code.ecommerce.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +24,6 @@ public class Customer {
     private String email;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Set<Order> orders = new HashSet<>();
 
     public void add(Order order){
