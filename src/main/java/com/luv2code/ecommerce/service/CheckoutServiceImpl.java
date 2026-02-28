@@ -12,11 +12,11 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-public class CheckoutServiceImpl implements CheckoutService{
+public class CheckoutServiceImpl implements CheckoutService {
 
     private CustomerRespository customerRespository;
 
-    public CheckoutServiceImpl(CustomerRespository customerRespository){
+    public CheckoutServiceImpl(CustomerRespository customerRespository) {
         this.customerRespository = customerRespository;
     }
 
@@ -32,7 +32,7 @@ public class CheckoutServiceImpl implements CheckoutService{
 
         //populate order with orderItems
         Set<OrderItem> orderItems = purchase.getOrderItems();
-        orderItems.forEach(item->order.add(item));
+        orderItems.forEach(item -> order.add(item));
 
         //populate order with billing Address and shipping Address
         order.setBillingAddress(purchase.getBillingAddress());
@@ -40,13 +40,22 @@ public class CheckoutServiceImpl implements CheckoutService{
 
         //populate customer with order
         Customer customer = purchase.getCustomer();
+
+        // Check if this is an existing customer
+        String theEmail = customer.getEmail();
+        Customer customerFromDB = customerRespository.findByEmail(theEmail);
+        if (customerFromDB != null) {
+            // we found them. let's assign them accordingly
+            customer = customerFromDB;
+        }
+
         customer.add(order);
 
         customerRespository.save(customer);
         return new PurchaseResponse(orderTrackingNumber);
     }
 
-    private String generateOrderTrackingNumber(){
+    private String generateOrderTrackingNumber() {
         // generate a random UUID number(UUID version-4) Universal unitque identifier
         return UUID.randomUUID().toString();
     }
